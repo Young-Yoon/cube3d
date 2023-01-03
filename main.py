@@ -5,7 +5,8 @@ import numpy as np
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 class Tetris:
     def __init__(self):
-        self.cubes = []
+        self.ok = []
+        self.cube = np.zeros((3, 3, 3), dtype=np.int8)
         self.blocks = [[str2cube('11010000'), str2cube('01010100'), str2cube('00010101')]]
         self.blocks += [[str2cube('11100100')]]
         self.blocks += [[str2cube('11100010')]]
@@ -13,35 +14,60 @@ class Tetris:
         self.blocks += [[str2cube('110011', d=(1, 2, 3))]]
         self.blocks += [[str2cube('11101000')]]
         self.blocks += [[str2cube('111010', d=(1, 2, 3))]]
+        self.stack = [(0, b) for b in self.blocks[0]]
         for j, bb in enumerate(self.blocks):
             if j == 0: continue
             print(f'element {j}:')
+            cubes = []
             for b in bb:
                 print_cube(b)
                 bb = bbox(b)
                 cube2dstr(bb)
-                rot = rotate(b)
+                rot = rotate(b)   # 24 = 4*(3+3)
                 ublock = unique_block(rot)
                 for u in ublock:
-                    pass
-                    # print_cube(bbox(dstr2block(u)))
+                    d = [int(x) for x in u[:3]]
+                    l = [(x0, x1, x2) for x0 in range(4-d[0]) for x1 in range(4-d[1]) for x2 in range(4-d[2])]
+                    # print(l)
+                    cubes += [str2cube(u[3:], d=d, l=x) for x in l]
+                    # print(len(cubes))
                 # pos2block(b)
-        addblock(self.blocks[0][0], self.blocks[1][0])
+            self.blocks[j] = cubes
+            print(len(self.blocks[j]))
 
     def update(self):
-        for b in self.blocks[0]:
-            pass
+        # print(self.stack)
+        ns = [len(self.stack)]
+        while len(self.stack) > 0:
+            n, b = self.stack.pop()
+            self.cube = np.where(self.cube > n, 0, self.cube)
+            ns[n] -= 1
+            # print(ns)
             # print_cube(b)
+            c0 = count(self.cube)
+            c = count(b)
+            c1 = count(self.cube+b)
+            # print(c0, c, c1, len(self.blocks))
+            if c0 + c == c1:
+                self.cube += b*(n+1)
+                if n == len(self.blocks) - 1:  # n == 7
+                    self.ok += [self.cube]
+                    print(f'sol:{len(self.ok)}')
+                    print_cube(self.ok[-1])
+                    print(ns)
+                else:
+                    self.stack += [(n+1, b) for b in self.blocks[n+1]]
+                    if n+1 < len(ns):
+                        ns[n+1] += len(self.blocks[n+1])
+                    else:
+                        ns += [len(self.blocks[n+1])]
+                # print_cube(self.cube)
 
 
-def str2cube(s, d=(2, 2, 2)):
-    b = np.pad(np.reshape(np.array([int(p) for p in s], dtype=np.int8), d), ((0, 3-d[0]), (0, 3-d[1]), (0, 3-d[2])))
+def str2cube(s, d=(2, 2, 2), l=(0, 0, 0)):
+    b = np.pad(np.reshape(np.array([int(p) for p in s], dtype=np.int8), d),
+               ((l[0], 3-d[0]-l[0]), (l[1], 3-d[1]-l[1]), (l[2], 3-d[2]-l[2])))
     return b
-
-
-def dstr2cube(s):
-    d = [int(x) for x in s[:3]]
-    return str2cube(s[3:], d)
 
 
 def cube2dstr(arr):
@@ -131,12 +157,6 @@ def unique_block(p):
 def count(a):
     # print(a, np.where(a > 0))
     return np.shape(np.where(a > 0))[1]
-
-
-def addblock(a, b):
-    print('add block', count(a), count(b), count(a+b))
-    print_cube(a)
-    print_cube(b)
 
 
 # Press the green button in the gutter to run the script.
