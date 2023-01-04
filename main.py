@@ -1,5 +1,5 @@
 import numpy as np
-
+import time
 
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
@@ -14,18 +14,17 @@ class Tetris:
         self.blocks += [[str2cube('110011', d=(1, 2, 3))]]
         self.blocks += [[str2cube('11101000')]]
         self.blocks += [[str2cube('111010', d=(1, 2, 3))]]
-        self.stack = [(0, b) for b in self.blocks[0]]
+        self.stack = [(0, b) for b in reversed(self.blocks[0])]
         for j, bb in enumerate(self.blocks):
             if j == 0: continue
             print(f'element {j}:')
             cubes = []
             for b in bb:
                 print_cube(b)
-                bb = bbox(b)
-                cube2dstr(bb)
+                # bb = bbox(b)
+                # cube2dstr(bb)
                 rot = rotate(b)   # 24 = 4*(3+3)
-                ublock = unique_block(rot)
-                for u in ublock:
+                for u in unique_block(rot):
                     d = [int(x) for x in u[:3]]
                     l = [(x0, x1, x2) for x0 in range(4-d[0]) for x1 in range(4-d[1]) for x2 in range(4-d[2])]
                     # print(l)
@@ -52,11 +51,10 @@ class Tetris:
                 self.cube += b*(n+1)
                 if n == len(self.blocks) - 1:  # n == 7
                     self.ok += [self.cube]
-                    print(f'sol:{len(self.ok)}')
+                    print(f'sol:{len(self.ok):03d}', ns)
                     print_cube(self.ok[-1])
-                    print(ns)
                 else:
-                    self.stack += [(n+1, b) for b in self.blocks[n+1]]
+                    self.stack += [(n+1, b) for b in reversed(self.blocks[n+1])]
                     if n+1 < len(ns):
                         ns[n+1] += len(self.blocks[n+1])
                     else:
@@ -150,7 +148,9 @@ def unique_block(p):
             r.add(s)
             # print_cube(bb)
         # print(r)
+    r = sorted(r, reverse=True)
     print(len(r), r)
+    # for s in r: print_cube(bbox(str2cube(s[3:], d=[int(x) for x in s[:3]])))
     return r
 
 
@@ -161,8 +161,10 @@ def count(a):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+    start = time.time()
     cube = Tetris()
     cube.update()
+    print(f'{time.time()-start:.2f}sec')
 
 
 
