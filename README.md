@@ -4,10 +4,9 @@
 
 * Answer: [339](sol.txt) 
 
-## Related notions
-* Symmetric group S4
-* Alternating group A4
-* Depth-first search
-
-
-
+## Approach
+1. Find all moves of blocks
+    1. Rotate each block: Symmetric group S4, Alternating group A4
+    2. Translate each rotated block
+2. Place blocks in order
+    * Depth-first search
