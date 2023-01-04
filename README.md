@@ -2,7 +2,7 @@
 
 ![Building blocks](202301011830.jpg)
 
-* Answer: 339 
+* Answer: [339](sol.txt) 
 
 ## Related notions
 * Symmetric group S4
