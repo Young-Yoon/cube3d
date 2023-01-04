@@ -7,7 +7,7 @@ class Tetris:
     def __init__(self):
         self.ok = []
         self.cube = np.zeros((3, 3, 3), dtype=np.int8)
-        self.blocks = [[str2cube('11010000'), str2cube('01010100'), str2cube('00010101')]]
+        self.blocks = [[(str2cube('11010000'),'0+000'), (str2cube('01010100'),'1+001'), (str2cube('00010101'),'2+001')]]
         self.blocks += [[str2cube('11100100')]]
         self.blocks += [[str2cube('11100010')]]
         self.blocks += [[str2cube('111100', d=(1, 2, 3))]]
@@ -15,30 +15,36 @@ class Tetris:
         self.blocks += [[str2cube('11101000')]]
         self.blocks += [[str2cube('111010', d=(1, 2, 3))]]
         self.stack = [(0, b) for b in reversed(self.blocks[0])]
+        self.move_blocks()
+
+    def move_blocks(self):
+        print_cube(self.blocks[0][0][0])
+        print(f'{len(self.blocks[0])}*1', [cube2dstr(bbox(b[0])) for b in self.blocks[0]])
         for j, bb in enumerate(self.blocks):
-            if j == 0: continue
-            print(f'element {j}:')
+            if j == 0:
+                continue
             cubes = []
             for b in bb:
-                print_cube(b)
+                print_cube(b*(j+1))
                 # bb = bbox(b)
                 # cube2dstr(bb)
                 rot = rotate(b)   # 24 = 4*(3+3)
-                for u in unique_block(rot):
+                for k, u in enumerate(unique_block(rot)):
                     d = [int(x) for x in u[:3]]
                     l = [(x0, x1, x2) for x0 in range(4-d[0]) for x1 in range(4-d[1]) for x2 in range(4-d[2])]
                     # print(l)
-                    cubes += [str2cube(u[3:], d=d, l=x) for x in l]
+                    cubes += [(str2cube(u[3:], d=d, l=x), str(k)+'+'+''.join([str(y) for y in x])) for x in l]
                     # print(len(cubes))
                 # pos2block(b)
             self.blocks[j] = cubes
-            print(len(self.blocks[j]))
+            # print(len(self.blocks[j]))
 
     def update(self):
         # print(self.stack)
         ns = [len(self.stack)]
         while len(self.stack) > 0:
-            n, b = self.stack.pop()
+            n, b_i = self.stack.pop()
+            b, info = b_i
             self.cube = np.where(self.cube > n, 0, self.cube)
             ns[n] -= 1
             # print(ns)
@@ -51,7 +57,8 @@ class Tetris:
                 self.cube += b*(n+1)
                 if n == len(self.blocks) - 1:  # n == 7
                     self.ok += [self.cube]
-                    print(f'sol:{len(self.ok):03d}', ns)
+                    print(f'sol:{len(self.ok):03d}',
+                          '(' + ', '.join([self.blocks[j][len(self.blocks[j])-1-x][1] for j, x in enumerate(ns)]) + ')')
                     print_cube(self.ok[-1])
                 else:
                     self.stack += [(n+1, b) for b in reversed(self.blocks[n+1])]
@@ -149,7 +156,7 @@ def unique_block(p):
             # print_cube(bb)
         # print(r)
     r = sorted(r, reverse=True)
-    print(len(r), r)
+    print(f'{len(r)}*{np.prod([4-int(x) for x in r[0][:3]])}', r)
     # for s in r: print_cube(bbox(str2cube(s[3:], d=[int(x) for x in s[:3]])))
     return r
 
