@@ -1,6 +1,11 @@
 ## How many ways to make a 3x3x3 cube from the seven blocks?
 
 ![Building blocks](202301011830.jpg)
+* Block numbers in the above figure
+```
+3 2 1 6
+7  5  4
+```
 
 * Answer: [339](sol.txt) 
 
