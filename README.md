@@ -1,10 +1,9 @@
 ## How many ways to make a 3x3x3 cube from the seven blocks?
 
 ![Building blocks](202301011830.jpg)
-* Block numbers in the above figure
 ```
-3 2 1 6
-7  5  4
+C B A F  # Block id in the above figure
+G  E  D
 ```
 
 * Answer: [339](sol.txt) 
@@ -66,13 +65,13 @@
 
 ## Solution
 ```
-sol:001 (0+000, 0+100, 2+111, 0+002, 3+021, 2+010, 8+200)
-114  224  724
-614  233  773
-665  655  753
+#001 (0+000, 0+100, 2+111, 0+002, 3+021, 2+010, 8+200)
+AAD  BBD  GBD
+FAD  BCC  GGC
+FFE  FEE  GEC
 ```
 * A cube has the three planes of 3x3.
-* Numbers indicate the block id's.
+* Alphabets indicate the block id's.
 * In `i+ddd`, `ddd` represents the translation in each axis.
 
 ### Block in string format

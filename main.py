@@ -57,7 +57,7 @@ class Tetris:
                 self.cube += b*(n+1)
                 if n == len(self.blocks) - 1:  # n == 7
                     self.ok += [self.cube]
-                    print(f'sol:{len(self.ok):03d}',
+                    print(f'#{len(self.ok):03d}',
                           '(' + ', '.join([self.blocks[j][len(self.blocks[j])-1-x][1] for j, x in enumerate(ns)]) + ')')
                     print_cube(self.ok[-1])
                 else:
@@ -95,7 +95,7 @@ def pos2cube(pos):
 
 def print_cube(arr):
     arr = np.transpose(np.array(arr), [1, 0, 2])
-    print('\n'.join(['  '.join([''.join([str(r2) for r2 in r1]) for r1 in r0]) for r0 in arr]))
+    print('\n'.join(['  '.join([''.join([chr(ord('A')+n-1) if n>0 else '.' for n in y]) for y in x]) for x in arr]))
 
 
 def bbox(arr):
