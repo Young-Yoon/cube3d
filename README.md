@@ -43,8 +43,8 @@
 ```
 {111}
 ```
-* 8Vertex+12Edge+6Face+1Center
-`(2e+o)^3=8eee+12eeo+6eoo+1ooo`
+* 8Vertex+12Edge+6Face+1Center  
+`8eee+12eeo+6eoo+1ooo=(2e+o)^3`
 
 ### Operation
 * Properties
@@ -52,6 +52,17 @@
  `(a,b,c), (2-a,b,c), (a,2-b,c), (a,b,2-c)`
     2. Permutation  
  `(a,b,c), (a,c,b), (b,a,c), (b,c,a), (c,a,b), (c,b,a)`
+* Simple operation: Rotation & Flip
+    1. Rotation through diagonal axis  
+`(a,b,c) <-> (b,c,a) <-> (c,a,b)`
+    2. Flip against the parallel faces  
+`(a,b,c) <-> (2-a,b,c)`  
+`(a,b,c) <-> (a,2-b,c)`  
+`(a,b,c) <-> (a,b,2-c)`
+    3. Flip against the diagonal planes  
+`(a,b,c) <-> (a,c,b)`  
+`(a,b,c) <-> (b,a,c)`  
+`(a,b,c) <-> (c,b,a)`  
 
 ## Solution
 ```
