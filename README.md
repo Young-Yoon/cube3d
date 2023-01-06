@@ -17,17 +17,43 @@
     * Depth-first search
 
 ## Cube representation
-* Coordinate
+### Coordinate
 ```
 000 001 002  100 101 102  200 201 202
 010 011 012  110 111 112  210 211 212
 020 021 022  120 121 122  220 221 222
 ```
 
-* Interchangeable position
+### Interchangeable position
+* Vertex
+```
+{000, 002, 020, 022, 200, 202, 220, 222}
+```
+* Edge
+```
+{001, 010, 012, 021,
+ 100, 102, 120, 122,
+ 201, 210, 212, 221}
+```
+* Face
+```
+{011, 101, 110, 112, 121, 211}
+```
+* Center
+```
+{111}
+```
+* 8Vertex+12Edge+6Face+1Center
+`(2e+o)^3=8eee+12eeo+6eoo+1ooo`
 
+### Operation
+* Properties
+    1. Preserve Even/Odd  
+ `(a,b,c), (2-a,b,c), (a,2-b,c), (a,b,2-c)`
+    2. Permutation  
+ `(a,b,c), (a,c,b), (b,a,c), (b,c,a), (c,a,b), (c,b,a)`
 
-### Solution
+## Solution
 ```
 sol:001 (0+000, 0+100, 2+111, 0+002, 3+021, 2+010, 8+200)
 114  224  724
