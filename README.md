@@ -17,6 +17,16 @@
     * Depth-first search
 
 ## Cube representation
+* Coordinate
+```
+000 001 002  100 101 102  200 201 202
+010 011 012  110 111 112  210 211 212
+020 021 022  120 121 122  220 221 222
+```
+
+* Interchangeable position
+
+
 ### Solution
 ```
 sol:001 (0+000, 0+100, 2+111, 0+002, 3+021, 2+010, 8+200)
