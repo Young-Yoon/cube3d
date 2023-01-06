@@ -76,14 +76,16 @@ FFE  FEE  GEC
 
 ### Block in string format
 ```
-330  000  000
-300  300  000
-000  000  000
+CC.  ...  ...
+C..  C..  ...
+...  ...  ...
 ```
-is inside the bounding box of the tensor shape `(2,2,2)` like 
+has the bounding box of size `(2,2,2)`:  
 ```
 11  00
 10  10
 ```
-The dimension of the bounding box and the occupancy is combined as 
+where `1` is the occupied position by the block and `0` is the empty position. 
+The sequence is serialized as `11 10 00 10` in the tensor order.  
+The dimension of the bounding box `222` and the occupancy sequence `11100010` is combined into 
 `'22211100010'`.
