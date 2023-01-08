@@ -6,7 +6,7 @@ import time
 class Tetris:
     def __init__(self):
         self.ok = []
-        self.cube = np.zeros((3, 3, 3), dtype=np.int8)
+        self.cube = [np.zeros((3, 3, 3), dtype=np.int8), []]
         self.blocks = [[(str2cube('11010000'),'0+000'), (str2cube('01010100'),'1+001'), (str2cube('00010101'),'2+001')]]
         self.blocks += [[str2cube('11100100')]]
         self.blocks += [[str2cube('11100010')]]
@@ -18,14 +18,14 @@ class Tetris:
         self.move_blocks()
 
     def move_blocks(self):
-        print_cube(self.blocks[0][0][0])
+        print_cube(bbox(self.blocks[0][0][0]))
         print(f'{len(self.blocks[0])}*1', [cube2dstr(bbox(b[0])) for b in self.blocks[0]])
         for j, bb in enumerate(self.blocks):
             if j == 0:
                 continue
             cubes = []
             for b in bb:
-                print_cube(b*(j+1))
+                print_cube(bbox(b*(j+1)))
                 # bb = bbox(b)
                 # cube2dstr(bb)
                 rot = rotate(b)   # 24 = 4*(3+3)
@@ -36,37 +36,40 @@ class Tetris:
                     cubes += [(str2cube(u[3:], d=d, l=x), str(k)+'+'+''.join([str(y) for y in x])) for x in l]
                     # print(len(cubes))
                 # pos2block(b)
-            self.blocks[j] = cubes
+            self.blocks[j] = cubes  # cubes = [(np[3,3,3], 'k+ddd'), ..]
             # print(len(self.blocks[j]))
 
-    def update(self):
+    def search(self):
         # print(self.stack)
         ns = [len(self.stack)]
         while len(self.stack) > 0:
             n, b_i = self.stack.pop()
             b, info = b_i
-            self.cube = np.where(self.cube > n, 0, self.cube)
+            self.cube[0] = np.where(self.cube[0] > n, 0, self.cube[0])
+            del self.cube[1][n:]
             ns[n] -= 1
             # print(ns)
             # print_cube(b)
-            c0 = count(self.cube)
+            c0 = count(self.cube[0])
             c = count(b)
-            c1 = count(self.cube+b)
+            c1 = count(self.cube[0]+b)
             # print(c0, c, c1, len(self.blocks))
             if c0 + c == c1:
-                self.cube += b*(n+1)
+                self.cube[0] += b*(n+1)   # (id, n, num): (A, 0, 1), ... , (G, 6, 7)
+                self.cube[1].append(info)
                 if n == len(self.blocks) - 1:  # n == 7
-                    self.ok += [self.cube]
+                    self.ok.append(self.cube[1][:])
                     print(f'#{len(self.ok):03d}',
                           '(' + ', '.join([self.blocks[j][len(self.blocks[j])-1-x][1] for j, x in enumerate(ns)]) + ')')
-                    print_cube(self.ok[-1])
+                    print_cube(self.cube[0])
+                    # print(self.ok)
                 else:
                     self.stack += [(n+1, b) for b in reversed(self.blocks[n+1])]
                     if n+1 < len(ns):
                         ns[n+1] += len(self.blocks[n+1])
                     else:
                         ns += [len(self.blocks[n+1])]
-                # print_cube(self.cube)
+                # print_cube(self.cube[0])
 
 
 def str2cube(s, d=(2, 2, 2), l=(0, 0, 0)):
@@ -170,9 +173,6 @@ def count(a):
 if __name__ == '__main__':
     start = time.time()
     cube = Tetris()
-    cube.update()
+    cube.search()
     print(f'{time.time()-start:.2f}sec')
-
-
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    

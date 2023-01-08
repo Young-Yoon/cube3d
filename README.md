@@ -87,5 +87,5 @@ has the bounding box of size `(2,2,2)`:
 ```
 where `1` is the occupied position by the block and `0` is the empty position. 
 The sequence is serialized as `11 10 00 10` in the tensor order.  
-The dimension of the bounding box `222` and the occupancy sequence `11100010` is combined into 
+The dimension of the bounding box `222` and the occupancy sequence `11100010` are combined into 
 `'22211100010'`.
