@@ -15,21 +15,22 @@ class Tetris:
         self.blocks += [[str2cube('11101000')]]
         self.blocks += [[str2cube('111010', d=(1, 2, 3))]]
         self.stack = [(0, b) for b in reversed(self.blocks[0])]
+        self.rotate = [[cube2dstr(bbox(b[0])) for b in self.blocks[0]]]
         self.move_blocks()
 
     def move_blocks(self):
-        print_cube(bbox(self.blocks[0][0][0]))
-        print(f'{len(self.blocks[0])}*1', [cube2dstr(bbox(b[0])) for b in self.blocks[0]])
         for j, bb in enumerate(self.blocks):
             if j == 0:
+                print_cube(bbox(self.blocks[0][0][0]))
+                print(f'{len(self.blocks[0])}*1', self.rotate[0])
                 continue
             cubes = []
             for b in bb:
                 print_cube(bbox(b*(j+1)))
                 # bb = bbox(b)
                 # cube2dstr(bb)
-                rot = rotate(b)   # 24 = 4*(3+3)
-                for k, u in enumerate(unique_block(rot)):
+                self.rotate.append(unique_block(rotate(b)))  # 24 = 4*(3+3)
+                for k, u in enumerate(self.rotate[-1]):
                     d = [int(x) for x in u[:3]]
                     l = [(x0, x1, x2) for x0 in range(4-d[0]) for x1 in range(4-d[1]) for x2 in range(4-d[2])]
                     # print(l)
@@ -38,6 +39,7 @@ class Tetris:
                 # pos2block(b)
             self.blocks[j] = cubes  # cubes = [(np[3,3,3], 'k+ddd'), ..]
             # print(len(self.blocks[j]))
+            # print(self.rotate)
 
     def search(self):
         # print(self.stack)
@@ -59,10 +61,8 @@ class Tetris:
                 self.cube[1].append(info)
                 if n == len(self.blocks) - 1:  # n == 7
                     self.ok.append(self.cube[1][:])
-                    print(f'#{len(self.ok):03d}',
-                          '(' + ', '.join([self.blocks[j][len(self.blocks[j])-1-x][1] for j, x in enumerate(ns)]) + ')')
-                    print_cube(self.cube[0])
-                    # print(self.ok)
+                    print('#{:03d} ({})'.format(len(self.ok), ', '.join(self.cube[1])))
+                    print_cube(self.info2cube(self.cube[1]))
                 else:
                     self.stack += [(n+1, b) for b in reversed(self.blocks[n+1])]
                     if n+1 < len(ns):
@@ -70,6 +70,14 @@ class Tetris:
                     else:
                         ns += [len(self.blocks[n+1])]
                 # print_cube(self.cube[0])
+
+    def info2cube(self, info):
+        b = np.zeros([3, 3, 3], np.int8)
+        for j, s in enumerate(info):
+            no, ddd = s.split('+')
+            dstr = self.rotate[j][int(no)]
+            b += str2cube(dstr[3:], d=[int(x) for x in dstr[:3]], l=[int(x) for x in ddd]) * (j + 1)
+        return b
 
 
 def str2cube(s, d=(2, 2, 2), l=(0, 0, 0)):
