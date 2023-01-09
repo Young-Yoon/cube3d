@@ -1376,6 +1376,6 @@ GGG  EGB  DBB
 GFF  DAF  DCC
 GAF  GAC  DBC
 GEE  EEB  DBB
-128.89sec
+0.11sec
 
 Process finished with exit code 0

@@ -1,7 +1,7 @@
 import numpy as np
 import time
 
-# Press ⌃R to execute it or replace it with your code.
+
 class Tetris:
     def __init__(self):
         self.ok = []
@@ -112,6 +112,9 @@ class Tetris:
                     r = r % c
                 seq.append('{}+{}'.format(str(no), ''.join([str(s) for s in trans[::-1]])))
             sol.append(seq)
+        for j in range(len(sol)):
+            print('#{:03d} ({})'.format(j+1, ', '.join(sol[j])))
+            print_cube(self.info2cube(sol[j]))
         return sol
 
 
@@ -216,6 +219,6 @@ def count(a):
 if __name__ == '__main__':
     start = time.time()
     cube = Tetris()
-    cube.search()
+    # cube.search()
+    cube.load('sol.bin')
     print(f'{time.time()-start:.2f}sec')
-    
