@@ -2,7 +2,6 @@ import numpy as np
 import time
 
 # Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 class Tetris:
     def __init__(self):
         self.ok = []
@@ -70,6 +69,7 @@ class Tetris:
                     else:
                         ns += [len(self.blocks[n+1])]
                 # print_cube(self.cube[0])
+        self.write()
 
     def info2cube(self, info):
         b = np.zeros([3, 3, 3], np.int8)
@@ -78,6 +78,41 @@ class Tetris:
             dstr = self.rotate[j][int(no)]
             b += str2cube(dstr[3:], d=[int(x) for x in dstr[:3]], l=[int(x) for x in ddd]) * (j + 1)
         return b
+
+    def write(self, fname='sol.bin'):
+        with open(fname, 'w+') as f:
+            for seq in self.ok:
+                for j, info in enumerate(seq):
+                    no, trans = info.split('+')
+                    f.write(chr(int(no)))
+                    dstr = self.rotate[j][int(no)]
+                    dim = [int(x) for x in dstr[:3]]
+                    cap = [1]
+                    for x in dim[:-1]:
+                        cap.append(cap[-1]*(4-x))
+                    f.write(chr(np.inner(cap, [int(x) for x in trans])))
+
+    def load(self, fname='sol.bin'):
+        with open(fname, mode="rb") as f:
+            fb = f.read()
+        sol = []
+        for n in range(0, len(fb), 14):
+            seq = []
+            for j in range(0, 7):
+                no = int(fb[n+2*j])
+                dstr = self.rotate[j][no]
+                dim = [int(x) for x in dstr[:3]]
+                cap = [1]
+                for x in dim[:-1]:
+                    cap.append(cap[-1]*(4-x))
+                r = int(fb[n+2*j+1])
+                trans = []
+                for c in cap[::-1]:
+                    trans.append(r//c)
+                    r = r % c
+                seq.append('{}+{}'.format(str(no), ''.join([str(s) for s in trans[::-1]])))
+            sol.append(seq)
+        return sol
 
 
 def str2cube(s, d=(2, 2, 2), l=(0, 0, 0)):
