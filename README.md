@@ -8,22 +8,29 @@ G  E  D
 
 * Answer: [339](sol.txt) 
 
-## Approach
-1. Find all moves of blocks
-    1. Rotate each block: Symmetric group S4, Alternating group A4
-    2. Translate each rotated block
-2. Place blocks in order
-    * Depth-first search
-
-## Cube representation
-### Coordinate
+### Description
+* A cube consists of 27 voxels. Each voxel has three dimension. 
 ```
 000 001 002  100 101 102  200 201 202
 010 011 012  110 111 112  210 211 212
 020 021 022  120 121 122  220 221 222
 ```
 
-### Interchangeable position
+* There are 7 building blocks: A .. G.
+Blocks have 4 voxels except that A has 3 voxels.
+
+## Approach
+1. Find all movable position of each block
+    1. Rotatation: Subgroup of symmetric group S4
+    2. Translation
+2. Place blocks in order
+    * Depth-first search
+
+
+
+## Rotation
+### Position Type
+Type is preserved by rotation  
 * Vertex
 ```
 {000, 002, 020, 022, 200, 202, 220, 222}
@@ -45,7 +52,7 @@ G  E  D
 * 8Vertex+12Edge+6Face+1Center  
 `8eee+12eeo+6eoo+1ooo=(2e+o)^3`
 
-### Operation
+### Rotation Operation
 * Properties
     1. Preserve Even/Odd  
  `(a,b,c), (2-a,b,c), (a,2-b,c), (a,b,2-c)`
