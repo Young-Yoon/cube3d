@@ -3,10 +3,12 @@ import time
 
 
 class Tetris:
-    def __init__(self):
+    def __init__(self, blk1=None):
+        if blk1 is None:
+            blk1 = [('11010000', '0+000'), ('01010100', '1+001'), ('00010101', '2+001')]
         self.ok = []
         self.cube = [np.zeros((3, 3, 3), dtype=np.int8), []]
-        self.blocks = [[(str2cube('11010000'),'0+000'), (str2cube('01010100'),'1+001'), (str2cube('00010101'),'2+001')]]
+        self.blocks = [[(str2cube(s[0]), s[1]) for s in blk1]]
         self.blocks += [[str2cube('11100100')]]
         self.blocks += [[str2cube('11100010')]]
         self.blocks += [[str2cube('111100', d=(1, 2, 3))]]
@@ -16,6 +18,7 @@ class Tetris:
         self.stack = [(0, b) for b in reversed(self.blocks[0])]
         self.rotate = [[cube2dstr(bbox(b[0])) for b in self.blocks[0]]]
         self.move_blocks()
+        self.filename = 'sol' +'-'.join([s[0] + s[1] for s in blk1]) + '.bin'
 
     def move_blocks(self):
         for j, bb in enumerate(self.blocks):
@@ -69,7 +72,7 @@ class Tetris:
                     else:
                         ns += [len(self.blocks[n+1])]
                 # print_cube(self.cube[0])
-        self.write()
+        self.write(self.filename)
 
     def info2cube(self, info):
         b = np.zeros([3, 3, 3], np.int8)
@@ -90,7 +93,7 @@ class Tetris:
                     cap = [1]
                     for x in dim[:-1]:
                         cap.append(cap[-1]*(4-x))
-                    f.write(chr(np.inner(cap, [int(x) for x in trans])))
+                    f.write(chr(np.inner(cap, [int(x) for x in trans])[0]))
 
     def load(self, fname='sol.bin'):
         with open(fname, mode="rb") as f:
@@ -115,7 +118,32 @@ class Tetris:
         for j in range(len(sol)):
             print('#{:03d} ({})'.format(j+1, ', '.join(sol[j])))
             print_cube(self.info2cube(sol[j]))
-        return sol
+        self.ok = sol
+
+    def distance(self):
+        hist = np.zeros([len(self.ok), 8], dtype=np.int16)
+        neighbors = {}
+        for i in range(len(self.ok)):
+            for j in range(i+1, len(self.ok)):
+                diff = [0 if self.ok[i][k] == self.ok[j][k] else 1 for k in range(7)]
+                dist = np.sum(diff)
+                # print(i, j, self.ok[i], self.ok[j], dist)
+                hist[i][dist] += 1
+                hist[j][dist] += 1
+                if dist <= 3:
+                    key = ''.join([chr(ord('A')+c) for c in np.where(np.array(diff)==1)[0].tolist()])
+                    val = (i+1, j+1)
+                    if key not in neighbors:
+                        neighbors[key] = [val]
+                    else:
+                        neighbors[key].append(val)
+                elif dist == 3:
+                    pass
+        print(hist[:10])
+        print(np.sum(hist, axis=0))
+        nn = sorted([(k, len(neighbors[k])) for k in neighbors])
+        for ch in 'ABCDEF':
+            print([k for k in nn if k[0].startswith(ch)])
 
 
 def str2cube(s, d=(2, 2, 2), l=(0, 0, 0)):
@@ -219,6 +247,8 @@ def count(a):
 if __name__ == '__main__':
     start = time.time()
     cube = Tetris()
+    # cube = Tetris([('10110000','0+000')])  # 207
     # cube.search()
     cube.load('sol.bin')
+    cube.distance()
     print(f'{time.time()-start:.2f}sec')
