@@ -2,7 +2,7 @@
 
 ![Building blocks](202301011830.jpg)
 ```
-C B A F  # Block id in the above figure
+C B A F  # Blocks in the above figure
 G  E  D
 ```
 
@@ -18,6 +18,15 @@ G  E  D
 
 * There are 7 building blocks: A .. G.
 Blocks have 4 voxels except that A has 3 voxels.
+
+* The shape of a block can be depicted with voxels.
+```
+CC ..  BB .B  AA ..  FF F.
+C. C.  B. ..  A. ..  .. ..
+
+.G. ...  .EE ...   ..D ...
+GGG ...  EE. ...   DDD ...
+```
 
 ## Approach
 1. Find all movable position of each block
